@@ -7,20 +7,7 @@ RUN groupadd -r redis && useradd -r -g redis redis
 # Install packages specific to our project
 RUN apt-get update && \
 apt-get upgrade -y && \
-apt-get install -y wget gcc libc6-dev make --force-yes --fix-missing
-
-# grab gosu for easy step-down from root
-ENV GOSU_VERSION 1.7
-
-RUN set -x \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true
+apt-get install -y gcc libc6-dev make --force-yes --fix-missing
 
 ENV REDIS_VERSION 3.0.7
 
@@ -37,7 +24,7 @@ RUN wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
 	&& make -C /usr/src/redis \
 	&& make -C /usr/src/redis install \
 	&& rm -r /usr/src/redis && \
-	apt-get remove --purge -y software-properties-common build-essential && \
+	apt-get remove --purge -y software-properties-common build-essential gcc make && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	apt-get autoclean && \
@@ -71,5 +58,7 @@ COPY start.sh /start.sh
 RUN chmod 777 /start.sh
 
 COPY confs/supervisord/supervisord.conf /etc/supervisord.conf
+
+USER redis
 
 CMD ["/bin/bash", "/start.sh"]
