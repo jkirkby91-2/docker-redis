@@ -33,11 +33,11 @@ RUN wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
 	rm -rf /usr/share/man/?? && \
 	rm -rf /usr/share/man/??_*
 
-RUN mkdir /data && chown redis:redis /data
+RUN chown redis:redis /srv
 
-VOLUME /data
+VOLUME /srv
 
-WORKDIR /data
+WORKDIR /srv
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
