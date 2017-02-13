@@ -41,7 +41,7 @@ WORKDIR /srv
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-COPY confs/apparmor/redis.conf /etc/apparmor/redis.conf
+COPY confs/apparmor/redis.conf /etc/apparmor.d/redis.conf
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
